@@ -5,25 +5,42 @@ function ReviewPage() {
 
   const [records, setRecords] = useState([]);
 
+  const API_BASE =
+    "https://breathe-esg-87pg.onrender.com";
+
   const fetchRecords = async () => {
 
-    const response = await axios.get(
-      "http://127.0.0.1:8000/api/review/"
-    );
+    try {
 
-    setRecords(response.data);
+      const response = await axios.get(
+        `${API_BASE}/api/review/`
+      );
+
+      setRecords(response.data);
+
+    } catch (error) {
+
+      console.error("Error fetching records:", error);
+    }
   };
 
   const handleAction = async (id, action) => {
 
-    await axios.post(
-      `http://127.0.0.1:8000/api/review/${id}/`,
-      {
-        action: action
-      }
-    );
+    try {
 
-    fetchRecords();
+      await axios.post(
+        `${API_BASE}/api/review/${id}/`,
+        {
+          action: action
+        }
+      );
+
+      fetchRecords();
+
+    } catch (error) {
+
+      console.error("Error updating record:", error);
+    }
   };
 
   useEffect(() => {
@@ -31,98 +48,120 @@ function ReviewPage() {
   }, []);
 
   return (
-  <div>
+    <div style={{ padding: "20px" }}>
 
-    <h2>Review Dashboard</h2>
+      <h2>Review Dashboard</h2>
 
-    <table
-      border="1"
-      cellPadding="10"
-      style={{
-        borderCollapse: "collapse",
-        width: "100%",
-        marginTop: "20px"
-      }}
-    >
-
-      <thead
+      <table
+        border="1"
+        cellPadding="10"
         style={{
-          backgroundColor: "#222",
-          color: "white"
+          borderCollapse: "collapse",
+          width: "100%",
+          marginTop: "20px"
         }}
       >
-        <tr>
-          <th>ID</th>
-          <th>Activity</th>
-          <th>Value</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
 
-      <tbody>
+        <thead
+          style={{
+            backgroundColor: "#222",
+            color: "white"
+          }}
+        >
+          <tr>
+            <th>ID</th>
+            <th>Activity</th>
+            <th>Value</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-        {records.map((record) => (
+        <tbody>
 
-          <tr
-            key={record.id}
-            style={{
-              backgroundColor:
-                record.activity_value < 0
-                  ? "#ffcccc"
-                  : "white"
-            }}
-          >
+          {records.map((record) => (
 
-            <td>{record.id}</td>
-
-            <td>{record.activity_type}</td>
-
-            <td>{record.activity_value}</td>
-
-            <td
+            <tr
+              key={record.id}
               style={{
-                color: record.approved
-                  ? "green"
-                  : "red",
-                fontWeight: "bold"
+                backgroundColor:
+                  record.activity_value < 0
+                    ? "#ffcccc"
+                    : "white"
               }}
             >
-              {record.approved ? "Approved" : "Pending"}
-            </td>
 
-            <td>
+              <td>{record.id}</td>
 
-              <button
-                onClick={() =>
-                  handleAction(record.id, "approve")
-                }
+              <td>{record.activity_type}</td>
+
+              <td>{record.activity_value}</td>
+
+              <td
+                style={{
+                  color:
+                    record.approved
+                      ? "green"
+                      : "orange",
+                  fontWeight: "bold"
+                }}
               >
-                Approve
-              </button>
+                {record.approved
+                  ? "Approved"
+                  : "Pending"}
+              </td>
 
-              {" "}
+              <td>
 
-              <button
-                onClick={() =>
-                  handleAction(record.id, "reject")
-                }
-              >
-                Reject
-              </button>
+                <button
+                  style={{
+                    marginRight: "10px",
+                    backgroundColor: "green",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 12px",
+                    cursor: "pointer"
+                  }}
+                  onClick={() =>
+                    handleAction(
+                      record.id,
+                      "approve"
+                    )
+                  }
+                >
+                  Approve
+                </button>
 
-            </td>
+                <button
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 12px",
+                    cursor: "pointer"
+                  }}
+                  onClick={() =>
+                    handleAction(
+                      record.id,
+                      "reject"
+                    )
+                  }
+                >
+                  Reject
+                </button>
 
-          </tr>
+              </td>
 
-        ))}
+            </tr>
 
-      </tbody>
+          ))}
 
-    </table>
+        </tbody>
 
-  </div>
-);
+      </table>
+
+    </div>
+  );
 }
 
 export default ReviewPage;
