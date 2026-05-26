@@ -52,6 +52,7 @@ class UploadCSVView(APIView):
                     created_by="admin"
                 )
                 NormalizedEmission.objects.create(
+                    raw_record=raw_record,
                     category="scope1",
                     activity_type=row.get("activity_type", "fuel combustion"),
                     activity_value=float(row.get("quantity", 0)),
