@@ -3,7 +3,7 @@ import pandas as pd
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from normalization.models import NormalizedEmission
 from .models import RawRecord
 
 
@@ -50,6 +50,14 @@ class UploadCSVView(APIView):
                     raw_data=row,
                     suspicious=suspicious,
                     created_by="admin"
+                )
+                NormalizedEmission.objects.create(
+                    category="scope1",
+                    activity_type=row.get("activity_type", "fuel combustion"),
+                    activity_value=float(row.get("quantity", 0)),
+                    unit=row.get("unit", "liters"),
+                    normalized_unit=row.get("unit", "liters"),
+                    approved=False
                 )
 
                 saved_rows.append(raw_record.id)
